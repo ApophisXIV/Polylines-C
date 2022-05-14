@@ -65,12 +65,8 @@ void polilinea_destruir(polilinea_t *polilinea) {
 
 /* ---------------------------------- Utils --------------------------------- */
 polilinea_t *polilinea_clonar(const polilinea_t *polilinea) {
-	if (polilinea == NULL || polilinea->puntos == NULL || polilinea->n == 0) return NULL;
-
-	polilinea_t *poly_clon = polilinea_crear((const float(*)[2])polilinea->puntos, polilinea->n);
-	if (poly_clon == NULL) return NULL;
-
-	return poly_clon;
+	if (polilinea == NULL) return NULL;
+	return polilinea_crear((const float (*)[2])polilinea->puntos, polilinea_cantidad_puntos(polilinea));
 }
 
 int main(void) {
