@@ -46,10 +46,6 @@ polilinea_t *leer_polilinea(FILE *f) {
 
 	const uint16_t n_points = GET_POLY_N_POINTS(poly_header);
 
-	float points[n_points][2];
-
-	if (fread(points, sizeof(float) * 2, n_points, f) != n_points) return NULL;
-
 	polilinea_t *poly = polilinea_crear_vacia(n_points);
 	if (poly == NULL) return NULL;
 
@@ -58,11 +54,19 @@ polilinea_t *leer_polilinea(FILE *f) {
 		return NULL;
 	}
 
-	for (size_t i = 0; i < n_points; i++)
-		if (!polilinea_setear_punto(poly, i, points[i][0], points[i][1])) {
+	for (size_t i = 0; i < n_points; i++) {
+
+		float points[2];
+		if (fread(points, sizeof(float[2]), 1, f) != 1) {
 			polilinea_destruir(poly);
 			return NULL;
 		}
+
+		if (!polilinea_setear_punto(poly, i, points[0], points[1])) {
+			polilinea_destruir(poly);
+			return NULL;
+		}
+	}
 
 	return poly;
 }
