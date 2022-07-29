@@ -39,30 +39,31 @@ polilinea_t *leer_polilinea(FILE *f) {
 	uint16_t poly_header;
 	if (fread(&poly_header, sizeof(uint16_t), 1, f) != 1) return NULL;
 
-	color_t c = color_crear(
-		(poly_header >> POLY_R_COLOR_SHIFT) & 0x1,
-		(poly_header >> POLY_G_COLOR_SHIFT) & 0x1,
-		(poly_header >> POLY_B_COLOR_SHIFT) & 0x1);
-
 	const uint16_t n_points = GET_POLY_N_POINTS(poly_header);
-
-	float points[n_points][2];
-
-	if (fread(points, sizeof(float) * 2, n_points, f) != n_points) return NULL;
 
 	polilinea_t *poly = polilinea_crear_vacia(n_points);
 	if (poly == NULL) return NULL;
 
+	color_t c = color_crear(
+		(poly_header >> POLY_R_COLOR_SHIFT) & 0x1,
+		(poly_header >> POLY_G_COLOR_SHIFT) & 0x1,
+		(poly_header >> POLY_B_COLOR_SHIFT) & 0x1);
 	if (!polilinea_setear_color(poly, c)) {
 		polilinea_destruir(poly);
 		return NULL;
 	}
 
-	for (size_t i = 0; i < n_points; i++)
-		if (!polilinea_setear_punto(poly, i, points[i][0], points[i][1])) {
+	float points[2];
+	for (size_t i = 0; i < n_points; i++) {
+		if (fread(points, sizeof(float), 2, f) != 2) {
 			polilinea_destruir(poly);
 			return NULL;
 		}
+		if (!polilinea_setear_punto(poly, i, points[0], points[1])) {
+			polilinea_destruir(poly);
+			return NULL;
+		}
+	}
 
 	return poly;
 }
