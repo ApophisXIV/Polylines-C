@@ -66,11 +66,5 @@ polilinea_t *leer_polilinea(FILE *f) {
 		}
 	}
 
-		if (!polilinea_setear_punto(poly, i, points[0], points[1])) {
-			polilinea_destruir(poly);
-			return NULL;
-		}
-	}
-
 	return poly;
 }
