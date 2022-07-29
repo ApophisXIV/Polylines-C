@@ -53,12 +53,19 @@ polilinea_t *leer_polilinea(FILE *f) {
 		return NULL;
 	}
 
-	float points[2];
 	for (size_t i = 0; i < n_points; i++) {
-		if (fread(points, sizeof(float), 2, f) != 2) {
+
+		float points[2];
+		if (fread(points, sizeof(float[2]), 1, f) != 1) {
 			polilinea_destruir(poly);
 			return NULL;
 		}
+		if (!polilinea_setear_punto(poly, i, points[0], points[1])) {
+			polilinea_destruir(poly);
+			return NULL;
+		}
+	}
+
 		if (!polilinea_setear_punto(poly, i, points[0], points[1])) {
 			polilinea_destruir(poly);
 			return NULL;
